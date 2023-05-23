@@ -1,9 +1,15 @@
 import { useState } from "react";
-import * as d3 from "d3";
+import GroupedChart from "./chart_functions/GroupedChart";
 import "./App.css";
 
 function App() {
-	return <></>;
+	return (
+		<>
+			<div className="flex justify-center items-center">
+				<GroupedChart />
+			</div>
+		</>
+	);
 }
 
 export default App;
