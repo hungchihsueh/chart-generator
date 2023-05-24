@@ -54,6 +54,9 @@ const drawChart = async () => {
 		.range([height * 0.95, height * 0.05]);
 
 	const yAxisG = svg.append("g").call(d3.axisLeft(y));
+	yAxisG.selectAll("text").style("color", "pink").style("font-size", "15px");
+	yAxisG.selectAll("line").style("stroke", "pink").style("stroke-width", "5px");
+	yAxisG.selectAll("path").style("stroke", "pink").style("stroke-width", "5px");
 
 	//add y axis label
 
