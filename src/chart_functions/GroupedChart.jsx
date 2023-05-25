@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 
-const drawChart = async () => {
+const drawChart = async (
+	data,
+	axisWidth,
+	axisColor,
+	barColors,
+	width,
+	height,
+) => {
+	// reset
+	d3.select(".groupChart").selectAll("*").remove();
+
+	// set the dimensions and margins of the graph
 	const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-	const width = 960 - margin.left - margin.right;
-	const height = 500 - margin.top - margin.bottom;
+	// const width = 960 - margin.left - margin.right;
+	// const height = 500 - margin.top - margin.bottom;
 
 	// append the svg object to the body of the page
 	const svg = d3
@@ -16,7 +27,7 @@ const drawChart = async () => {
 		.attr("transform", `translate(${margin.left},${margin.top})`);
 
 	//parse the data
-	const data = await d3.csv("/test_data/barchart.csv", d3.autoType);
+	// const data = await d3.csv("/test_data/barchart.csv", d3.autoType);
 	console.log("data", data);
 	const headers = data.columns;
 	console.log("headers", headers);
@@ -30,7 +41,7 @@ const drawChart = async () => {
 	// Add X axis
 	const x = d3.scaleBand().domain(groups).range([0, width]).padding([0.3]);
 
-	svg
+	const xAxisG = svg
 		.append("g")
 		.attr("transform", `translate(0,${height})`)
 		.call(d3.axisBottom(x).tickSizeOuter(0));
@@ -53,9 +64,32 @@ const drawChart = async () => {
 		.range([height, height * 0.05]);
 
 	const yAxisG = svg.append("g").call(d3.axisLeft(y));
-	yAxisG.selectAll("text").style("color", "pink").style("font-size", "15px");
-	yAxisG.selectAll("line").style("stroke", "pink").style("stroke-width", "5px");
-	yAxisG.selectAll("path").style("stroke", "pink").style("stroke-width", "5px");
+
+	// style axis
+	xAxisG
+		.selectAll("text")
+		.style("color", `${axisColor}`)
+		.style("font-size", "12px");
+	xAxisG
+		.selectAll("line")
+		.style("stroke", `${axisColor}`)
+		.style("stroke-width", "1px");
+	xAxisG
+		.selectAll("path")
+		.style("stroke", `${axisColor}`)
+		.style("stroke-width", `${axisWidth}px`);
+	yAxisG
+		.selectAll("text")
+		.style("color", `${axisColor}`)
+		.style("font-size", "15px");
+	yAxisG
+		.selectAll("line")
+		.style("stroke", `${axisColor}`)
+		.style("stroke-width", "1px");
+	yAxisG
+		.selectAll("path")
+		.style("stroke", `${axisColor}`)
+		.style("stroke-width", `${axisWidth}px`);
 
 	//add y axis label
 
@@ -67,10 +101,7 @@ const drawChart = async () => {
 		.padding([0.1]);
 
 	// color palette = one color per subgroup
-	const color = d3
-		.scaleOrdinal()
-		.domain(subgroups)
-		.range(["#e41a1c", "#377eb8", "#4daf4a"]);
+	const color = d3.scaleOrdinal().domain(subgroups).range(barColors);
 
 	// Show the bars
 	svg
@@ -92,14 +123,13 @@ const drawChart = async () => {
 
 const GroupedChart = ({
 	data,
-	config = {
-		axisWidth: 5,
-		color: "pink",
-		barColors: ["#e41a1c", "#377eb8", "#4daf4a"],
-		width: 960,
-		height: 500,
-		margin: { top: 20, right: 20, bottom: 30, left: 40 },
-	},
+	axisWidth = 5,
+	axisColor = "pink",
+	color = "pink",
+	barColors = ["#e41a1c", "#377eb8", "#4daf4a"],
+	width = 960,
+	height = 500,
+	// margin: { top: 20, right: 20, bottom: 30, left: 40 },
 }) => {
 	const [load, setLoad] = useState(false);
 	useEffect(() => {
@@ -107,9 +137,9 @@ const GroupedChart = ({
 		// 	console.log("props", d);
 		// });
 		console.log("data from props", data);
-		load && drawChart();
+		load && drawChart(data, axisWidth, axisColor, barColors, width, height);
 		setLoad(true);
-	}, [load, data]);
+	}, [load, data, axisColor, axisWidth, color, barColors, width, height]);
 	return <div className="groupChart"></div>;
 };
 

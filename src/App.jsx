@@ -9,11 +9,12 @@ function App() {
 	const [file, setFile] = useState(null);
 	const [parsedFile, setParsedFile] = useState([]);
 	const [chartConfig, setChartConfig] = useState({
-		width: 0,
-		height: 0,
-		barColors: [],
-		axisWidth: 0,
-		axisColor: "",
+		axisWidth: 5,
+		axisColor: "pink",
+		color: "pink",
+		barColors: ["#e41a1c", "#377eb8", "#4daf4a"],
+		width: 960,
+		height: 500,
 	});
 
 	useEffect(() => {
@@ -194,7 +195,11 @@ function App() {
 				</div>
 				<GroupedChart
 					data={parsedFile}
-					config={chartConfig}
+					axisWidth={chartConfig.axisWidth}
+					axisColor={chartConfig.axisColor}
+					barColors={chartConfig.barColors}
+					width={chartConfig.width}
+					height={chartConfig.height}
 				/>
 			</div>
 		</>
