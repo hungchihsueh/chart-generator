@@ -101,7 +101,7 @@ const drawChart = async (
 		.padding([0.1]);
 
 	// color palette = one color per subgroup
-	const color = d3.scaleOrdinal().domain(subgroups).range(barColors);
+	const color = d3.scaleOrdinal().domain(subgroups).range(barColors·);
 
 	// Show the bars
 	svg
