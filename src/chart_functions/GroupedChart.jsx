@@ -41,17 +41,16 @@ const drawChart = async () => {
 		.domain([
 			0,
 			d3.max(data, (d) => {
-				console.log(
-					"d",
-					d3.max(Object.values(d).filter((item) => typeof item === "number")),
-				);
+				// console.log(
+				// 	"d",
+				// 	d3.max(Object.values(d).filter((item) => typeof item === "number")),
+				// );
 				return d3.max(
 					Object.values(d).filter((item) => typeof item === "number"),
 				);
-				// return 40;
 			}),
 		])
-		.range([height * 0.95, height * 0.05]);
+		.range([height, height * 0.05]);
 
 	const yAxisG = svg.append("g").call(d3.axisLeft(y));
 	yAxisG.selectAll("text").style("color", "pink").style("font-size", "15px");
@@ -91,12 +90,26 @@ const drawChart = async () => {
 		.attr("fill", (d) => color(d.key));
 };
 
-const GroupedChart = () => {
+const GroupedChart = ({
+	data,
+	config = {
+		axisWidth: 5,
+		color: "pink",
+		barColors: ["#e41a1c", "#377eb8", "#4daf4a"],
+		width: 960,
+		height: 500,
+		margin: { top: 20, right: 20, bottom: 30, left: 40 },
+	},
+}) => {
 	const [load, setLoad] = useState(false);
 	useEffect(() => {
+		// d3.csv(data, d3.autoType).then((d) => {
+		// 	console.log("props", d);
+		// });
+		console.log("data from props", data);
 		load && drawChart();
 		setLoad(true);
-	}, [load]);
+	}, [load, data]);
 	return <div className="groupChart"></div>;
 };
 
