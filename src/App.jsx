@@ -19,6 +19,9 @@ function App() {
 	});
 
 	useEffect(() => {
+		// setInterval(() => {
+		// 	console.log("now", new Date());
+		// }, 1000);
 		if (file) {
 			loadFile();
 		}
@@ -44,11 +47,15 @@ function App() {
 		reader.onload = async function (event) {
 			const fileContent = event.target.result;
 
-			// Convert the fileContent from .docx to HTML
+			// Convert the fileContent from .docx to string
 			const convertedHTML = await convertDocxToHTML(fileContent);
+
+			//convert string to HTML
+			const html = marked(convertedHTML);
+			console.log("html", html);
 			// Display the converted HTML
 			const outputDiv = document.getElementById("output");
-			outputDiv.innerHTML = convertedHTML;
+			outputDiv.innerHTML = html;
 		};
 
 		reader.readAsArrayBuffer(file);
