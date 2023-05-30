@@ -3,7 +3,8 @@ import GroupedChart from "./chart_functions/GroupedChart";
 import "./App.css";
 import * as d3 from "d3";
 const reader = new FileReader();
-
+import { marked } from "marked";
+// import mammoth from "mammoth";
 function App() {
 	const [selectedColor, setSelectedColor] = useState("");
 	const [file, setFile] = useState(null);
@@ -35,10 +36,55 @@ function App() {
 		console.log("parse File", data);
 		setParsedFile(data);
 	}
+	function convertToHTML() {
+		const fileInput = document.getElementById("file-input");
+		const file = fileInput.files[0];
+
+		const reader = new FileReader();
+		reader.onload = async function (event) {
+			const fileContent = event.target.result;
+
+			// Convert the fileContent from .docx to HTML
+			const convertedHTML = await convertDocxToHTML(fileContent);
+			// Display the converted HTML
+			const outputDiv = document.getElementById("output");
+			outputDiv.innerHTML = convertedHTML;
+		};
+
+		reader.readAsArrayBuffer(file);
+	}
+	function convertDocxToHTML(fileContent) {
+		return new Promise((resolve, reject) => {
+			mammoth
+				.convertToHtml({ arrayBuffer: fileContent })
+				.then((result) => {
+					console.log("result", result);
+					const html = result.value;
+					resolve(html);
+				})
+				.catch((error) => {
+					console.error("Conversion error:", error);
+					reject(error);
+				});
+		});
+	}
 	return (
 		<>
 			<div className="flex flex-col items-center justify-center">
-				{/* input form */}
+				<input
+					type="file"
+					name=""
+					id="file-input"
+					className="bg-pink-500"
+					onChange={(e) => {}}
+				/>
+				<button
+					id="convert-button"
+					onClick={() => convertToHTML()}>
+					Convert to HTML
+				</button>
+				<div id="output"></div>
+				input form
 				<div className="p-5 ">
 					{/* file upload */}
 
@@ -193,14 +239,14 @@ function App() {
 						</fieldset> */}
 					</div>
 				</div>
-				<GroupedChart
+				{/* <GroupedChart
 					data={parsedFile}
 					axisWidth={chartConfig.axisWidth}
 					axisColor={chartConfig.axisColor}
 					barColors={chartConfig.barColors}
 					width={chartConfig.width}
 					height={chartConfig.height}
-				/>
+				/> */}
 			</div>
 		</>
 	);
