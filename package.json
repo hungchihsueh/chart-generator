@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "d3": "^7.8.4",
-    "mammoth": "^1.5.1",
+    "mammoth": "^1.6.0",
     "marked": "^5.0.3",
+    "marked-custom-heading-id": "^2.0.1",
+    "marked-extended-tables": "^1.0.6",
+    "marked-gfm-heading-id": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-papaparse": "^4.1.0"
