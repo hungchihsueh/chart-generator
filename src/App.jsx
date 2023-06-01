@@ -18,11 +18,29 @@ renderer.heading = function (text, level) {
 	</h${level}>`;
 };
 renderer.code = function (code, language, isEscaped) {
-	console.log("code", code);
-	console.log("infostring", language);
-	console.log("escaped", isEscaped);
+	// console.log("code", code);
+	// console.log("infostring", language);
+	// console.log("escaped", isEscaped);
 	const headingRegex = /^(#{1,6})\s+(.*)/gm;
-	console.log("heading", headingRegex.exec(code));
+	console.log("heading", code.match(headingRegex));
+
+	const paragraphRegex = /(?<=\n{2}|^)(?!#)([^\n]+)(?=\n{2}|$)/gs;
+	const paragraphs = code
+		.match(paragraphRegex)
+		.map((p) => p.replace(/\n/g, ""));
+
+	console.log(paragraphs);
+
+	const imageRegex = /!\[.*?\]\((.*?)\)/g;
+	const images = [];
+
+	let match;
+	while ((match = imageRegex.exec(code)) !== null) {
+		images.push(match[1]);
+	}
+
+	console.log(images);
+	return code;
 };
 
 function App() {
@@ -43,9 +61,24 @@ function App() {
 				.extractRawText(options)
 				.then(function (result) {
 					var html = result.value;
-					marked.use({ renderer });
-					document.getElementById("output").innerHTML = marked(html);
 					console.log(html);
+					marked.use({ renderer });
+					function separateMarkdownSections(markdownString) {
+						// Define the regular expression pattern to split the Markdown string
+						const pattern = /\n{2,}/;
+
+						// Split the Markdown string using the regular expression pattern
+						const sections = markdownString.split(pattern);
+
+						// Trim leading and trailing whitespace from each section
+						const trimmedSections = sections.map((section) => section.trim());
+
+						return trimmedSections;
+					}
+					const sections = separateMarkdownSections(html);
+					console.log(sections);
+					document.getElementById("output").innerHTML = marked(html);
+					// console.log(html);
 				})
 				.done();
 		};
