@@ -21,28 +21,29 @@ renderer.code = function (code, language, isEscaped) {
 	// console.log("code", code);
 	// console.log("infostring", language);
 	// console.log("escaped", isEscaped);
-	const headingRegex = /^(#{1,6})\s+(.*)/gm;
-	console.log("heading", code.match(headingRegex));
+	// const headingRegex = /^(#{1,6})\s+(.*)/gm;
+	// console.log("heading", code.match(headingRegex));
 
-	const paragraphRegex = /(?<=\n{2}|^)(?!#)([^\n]+)(?=\n{2}|$)/gs;
-	const paragraphs = code
-		.match(paragraphRegex)
-		.map((p) => p.replace(/\n/g, ""));
+	// const paragraphRegex = /(?<=\n{2}|^)(?!#)([^\n]+)(?=\n{2}|$)/gs;
+	// const paragraphs = code
+	// 	.match(paragraphRegex)
+	// 	.map((p) => p.replace(/\n/g, ""));
 
-	console.log(paragraphs);
+	// console.log(paragraphs);
 
-	const imageRegex = /!\[.*?\]\((.*?)\)/g;
-	const images = [];
+	// const imageRegex = /!\[.*?\]\((.*?)\)/g;
+	// const images = [];
 
-	let match;
-	while ((match = imageRegex.exec(code)) !== null) {
-		images.push(match[1]);
-	}
+	// let match;
+	// while ((match = imageRegex.exec(code)) !== null) {
+	// 	images.push(match[1]);
+	// }
 
-	console.log(images);
-	return code;
+	return `<div class="${language}">
+	${code}
+	</div>`;
 };
-
+marked.use({ renderer });
 function App() {
 	function convertToHTML() {
 		var fileInput = document.getElementById("fileInput");
@@ -56,13 +57,29 @@ function App() {
 			var options = {
 				arrayBuffer: arrayBuffer,
 			};
+			const asd = [
+				"# 標題",
+				"本集團以「成為國際永續標竿企業，積極為後代推動更好的未來」為願景，面對人類本世紀最大挑戰之一的氣候變...候風險並採取積極策略，發揮資金提供者與管理者的影響力，驅動價值鏈低碳轉型，朝向淨零碳排的最終目標。",
+				"本報告書透過以下四面向闡述本集團氣候相關風險與機會管理作為，以展現本集團對於氣候變遷減緩與調適之承諾。",
+				[
+					"```talk",
+					"# some heading",
+					"# some heading 2",
+					"paragraph1",
+					"paragraph2asdfklhjjjjlljjjjjjjjjjjjjjjjjjjjjjjjllj…dhfkjsdnf,mn,mnvxc,mnvxcm,vnxcm,nwehfkjwhfwkejfhw",
+					"paragraph3",
+					"![](https://images.unsplash.com/photo-168537186362…DB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80)",
+					"```",
+				],
+				"",
+			];
 
 			var result = mammoth
 				.extractRawText(options)
 				.then(function (result) {
 					var html = result.value;
 					console.log(html);
-					marked.use({ renderer });
+
 					function separateMarkdownSections(markdownString) {
 						// Define the regular expression pattern to split the Markdown string
 						const pattern = /\n{2,}/;
@@ -77,7 +94,7 @@ function App() {
 					}
 					const sections = separateMarkdownSections(html);
 					console.log(sections);
-					document.getElementById("output").innerHTML = marked(html);
+					document.getElementById("output").innerText = html;
 					// console.log(html);
 				})
 				.done();
@@ -101,6 +118,95 @@ function App() {
 					id="convert-button"
 					onClick={() => convertToHTML()}>
 					Convert to HTML
+				</button>
+				<button
+					onClick={() => {
+						marked.use({ renderer });
+						let asd = [
+							"# 標題",
+							"本集團以「成為國際永續標竿企業，積極為後代推動更好的未來」為願景，面對人類本世紀最大挑戰之一的氣候變...候風險並採取積極策略，發揮資金提供者與管理者的影響力，驅動價值鏈低碳轉型，朝向淨零碳排的最終目標。",
+							"本報告書透過以下四面向闡述本集團氣候相關風險與機會管理作為，以展現本集團對於氣候變遷減緩與調適之承諾。",
+							"```talk",
+							"# some heading",
+							"# some heading 2",
+							"paragraph1",
+							"paragraph2asdfklhjjjjlljjjjjjjjjjjjjjjjjjjjjjjjllj…dhfkjsdnf,mn,mnvxc,mnvxcm,vnxcm,nwehfkjwhfwkejfhw",
+							"paragraph3",
+							"![](https://images.unsplash.com/photo-168537186362…DB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80)",
+							"```",
+							"random sutff",
+							"```www",
+							"# some heading123",
+							"# some heading 1242",
+							"paragraph13423",
+							"paragraph2asdfklhjjjjlljjjjjjjjjjjjjjjjjjjjjjjjllj…dhfkjsdnf,mn,mnvxc,mnvxcm,vnxcm,nwehfkjwhfwkejfhw",
+							"paragraph233",
+							"![](https://images.unsplash.com/photo-168537186362…DB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=99980)",
+							"```",
+						];
+						let newArr = [...asd];
+						// console.log(newArr);
+						let codeBlockStartIndex = 0;
+						let codeBlock = [];
+						// know the code block start with "```SOMETHONG" and end with "```"
+						// try identify where "```SOMETHING" at and where "```" at
+						// then try totake the item between index and put it into a new array
+						//and put it back to the original array at the same index
+
+						for (let i = 0; i < newArr.length; i++) {
+							// console.log(codeBlockStartIndex);
+							// console.log("newArr[i]", newArr[i]);
+
+							if (
+								typeof newArr[i] != "object" &&
+								codeBlockStartIndex == 0 &&
+								newArr[i].startsWith("```")
+							) {
+								codeBlockStartIndex = i;
+								codeBlock.push(newArr[i]);
+								console.log("codeBlock=0", codeBlock);
+							} else {
+								if (
+									typeof newArr[i] != "object" &&
+									codeBlockStartIndex !== 0 &&
+									newArr[i].endsWith("```")
+								) {
+									codeBlock.push(newArr[i]);
+									console.log("codeBlock!!!", codeBlock);
+									newArr.splice(
+										codeBlockStartIndex,
+										codeBlock.length,
+										codeBlock,
+									);
+									console.log("newArr", newArr);
+									i = 0;
+									codeBlockStartIndex = 0;
+									codeBlock = [];
+								} else if (
+									typeof newArr[i] != "object" &&
+									codeBlockStartIndex !== 0 &&
+									!newArr[i].endsWith("```")
+								) {
+									codeBlock.push(newArr[i]);
+									console.log("codeBlock!=0", codeBlock);
+								}
+							}
+						}
+						console.log("the end", newArr);
+
+						let x = newArr.flatMap((item) => {
+							if (typeof item == "object") {
+								// console.log("item", marked(item.join("\n")));
+								return marked(`${item.join("\n")}`);
+							}
+							return marked(item);
+						});
+						// console.log("before join", x);
+						x = x.join("");
+						// console.log(x);
+						document.getElementById("output").innerHTML = x;
+					}}>
+					test
 				</button>
 				<div id="output"></div>
 			</div>
