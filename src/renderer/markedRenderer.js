@@ -83,6 +83,11 @@ renderer.code = function (code, language, isEscaped) {
 					return '<pre><code>' + code + '</code></pre>';
 				}
 				break;
+			case "table":
+				console.log("table", marked(code));
+				return `<div class="${language}">${marked(code)}</div>`;
+				break;
+			
 			default:
 				return `<pre><code class="${language}">${code}</code></pre>`;
 		}
