@@ -22,6 +22,125 @@ function App() {
 			});
 		});
 	}
+	async function doD3() {
+		const margin = { top: 20, right: 20, bottom: 30, left: 40 };
+		const width = 600 - margin.left - margin.right;
+		const height = 400 - margin.top - margin.bottom;
+
+		// Append an SVG element to the chart div
+		document
+			.getElementById("output")
+			.appendChild(document.createElement("div"))
+			.setAttribute("id", "chart");
+		const svg = d3
+			.select(".d3barchart")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+			.append("g")
+			.attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+		// Load the CSV data
+		// console.log("d3chart parse",d3.csvParse(code))
+		d3.csv("#").then((x) => {
+			console.log(document.querySelector(".d3barchart").innerText);
+			const dataString = document
+				.querySelector(".d3barchart")
+				.innerText.replaceAll(" ", "\n");
+			const data = d3.csvParse(dataString);
+			document.querySelector(".d3barchart").innerText = "";
+			// Convert data values to numbers
+			console.log("csv data", data);
+			data.forEach((d) => {
+				d["2020年"] = +d["2020年"];
+				d["2021年"] = +d["2021年"];
+				d["2022年"] = +d["2022年"];
+			});
+
+			// Get the column names
+			const columns = data.columns.slice(1);
+
+			// Set up the x and y scales
+			const xScale = d3
+				.scaleBand()
+				.domain(data.map((d) => d["組名"]))
+				.range([0, width])
+				.paddingInner(0.1)
+				.paddingOuter(0.1);
+
+			const yScale = d3
+				.scaleLinear()
+				.domain([0, d3.max(data, (d) => d3.max(columns, (col) => d[col]))])
+				.range([height, 0]);
+
+			// Set up the color scale
+			const colorScale = d3
+				.scaleOrdinal()
+				.domain(columns)
+				.range(d3.schemeCategory10);
+
+			// Draw the bars
+			const groups = svg
+				.selectAll(".group")
+				.data(data)
+				.join("g")
+				.attr("class", "group")
+				.attr("transform", (d) => `translate(${xScale(d["組名"])}, 0)`);
+
+			groups
+				.selectAll("rect")
+				.data((d) =>
+					columns.map((col) => ({
+						group: d["組名"],
+						column: col,
+						value: d[col],
+					})),
+				)
+				.join("rect")
+				.attr("class", "bar")
+				.attr(
+					"x",
+					(d) =>
+						(xScale.bandwidth() / columns.length) * columns.indexOf(d.column),
+				)
+				.attr("y", (d) => yScale(d.value))
+				.attr("width", xScale.bandwidth() / columns.length)
+				.attr("height", (d) => height - yScale(d.value))
+				.attr("fill", (d) => colorScale(d.column));
+
+			// Add x-axis
+			svg
+				.append("g")
+				.attr("class", "axis")
+				.attr("transform", `translate(0, ${height})`)
+				.call(d3.axisBottom(xScale));
+
+			// Add y-axis
+			svg.append("g").attr("class", "axis").call(d3.axisLeft(yScale));
+
+			// Add legend
+			const legend = svg
+				.append("g")
+				.attr("class", "legend")
+				.attr("transform", `translate(0, ${height + margin.bottom / 2})`);
+
+			legend
+				.selectAll("rect")
+				.data(columns)
+				.join("rect")
+				.attr("x", (_, i) => i * 80)
+				.attr("width", 10)
+				.attr("height", 10)
+				.attr("fill", (d) => colorScale(d));
+
+			legend
+				.selectAll("text")
+				.data(columns)
+				.join("text")
+				.attr("x", (_, i) => i * 80 + 15)
+				.attr("y", 9)
+				.text((d) => d);
+		});
+	}
 	function convertToHTML() {
 		var fileInput = document.getElementById("fileInput");
 		var file = fileInput.files[0];
@@ -114,6 +233,7 @@ function App() {
 					// console.log(x);
 					document.getElementById("output").innerHTML = x;
 					doMermaid();
+					doD3();
 				})
 				.done();
 		};
@@ -142,7 +262,7 @@ function App() {
 					id="output"
 					className="mx-auto w-[1190px]"></div>
 
-				<table>
+				{/* <table>
 					<thead>
 						<tr>
 							<th rowSpan={2}>Year</th>
@@ -187,7 +307,7 @@ function App() {
 							<td>3</td>
 						</tr>
 					</tbody>
-				</table>
+				</table> */}
 			</div>
 		</>
 	);
