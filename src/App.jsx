@@ -141,6 +141,53 @@ function App() {
 				<div
 					id="output"
 					className="mx-auto w-[1190px]"></div>
+
+				<table>
+					<thead>
+						<tr>
+							<th rowSpan={2}>Year</th>
+							<th colSpan={3}>2022</th>
+							<th colSpan={3}>2023</th>
+						</tr>
+						<tr>
+							<th>ha</th>
+							<th>hb</th>
+							<th>hc</th>
+							<th>ha</th>
+							<th>hb</th>
+							<th>hc</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>head1</td>
+							<td>1</td>
+							<td>2</td>
+							<td>3</td>
+							<td>1</td>
+							<td>2</td>
+							<td>3</td>
+						</tr>
+						<tr>
+							<td>head2</td>
+							<td>1</td>
+							<td>2</td>
+							<td>3</td>
+							<td>1</td>
+							<td>2</td>
+							<td>3</td>
+						</tr>
+						<tr>
+							<td>head3</td>
+							<td>1</td>
+							<td>2</td>
+							<td>3</td>
+							<td>1</td>
+							<td>2</td>
+							<td>3</td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
 		</>
 	);

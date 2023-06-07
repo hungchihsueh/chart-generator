@@ -77,15 +77,49 @@ renderer.code = function (code, language, isEscaped) {
 				// 		return svgCode.svg;
 				// 	})
 				// return
-				if (code.match(/^sequenceDiagram/) || code.match(/^graph/)|| code.match(/^flowchart/)) {
+				if (code.match(/^sequenceDiagram/) || code.match(/^graph/) || code.match(/^flowchart/)) {
 					return '<pre class="mermaid">' + code + '</pre>';
 				} else {
 					return '<pre><code>' + code + '</code></pre>';
 				}
 				break;
 			case "table":
-				console.log("table", marked(code));
-				return `<div class="${language}">${marked(code)}</div>`;
+				// console.log(code)
+				// console.log("table", JSON.parse(code));
+				function generateHtmlTable(jsonObj) {
+					let tableHtml = "<table>\n";
+
+					// Generate table header
+					tableHtml += "<thead>\n";
+					for (const row of jsonObj.header.rows) {
+						tableHtml += "<tr>\n";
+						for (const cell of row.cells) {
+							tableHtml += `<th rowspan="${cell.rowspan || 1}" colspan="${
+								cell.colspan || 1
+							}">${cell.content}</th>\n`;
+						}
+						tableHtml += "</tr>\n";
+					}
+					tableHtml += "</thead>\n";
+
+					// Generate table body
+					tableHtml += "<tbody>\n";
+					for (const row of jsonObj.rows) {
+						tableHtml += "<tr>\n";
+						for (const cell of row.cells) {
+							tableHtml += `<td>${cell.content}</td>\n`;
+						}
+						tableHtml += "</tr>\n";
+					}
+					tableHtml += "</tbody>\n";
+
+					tableHtml += "</table>";
+					return tableHtml;
+				}
+				console.log("generateHtmlTable", generateHtmlTable(JSON.parse(code)));
+				return `<div class="${language}">${generateHtmlTable(
+					JSON.parse(code),
+				)}</div>`;
 				break;
 			
 			default:

@@ -74,7 +74,7 @@
         overflow: hidden;
 
         & td {
-            border: 0.5px solid #000;
+            border: 0.5px solid #ddd;
             padding: 0.5rem;
         }
 
@@ -82,22 +82,23 @@
             overflow: hidden;
 
             & th {
-                border: 0.5px solid #000;
-                border-left: 0.5px solid #000;
-                border-right: 0.5px solid #000;
+                border: 0.5px solid #ddd;
+                border-left: 0.5px solid #ddd;
+                border-right: 0.5px solid #ddd;
                 padding: 0.5rem;
-                text-align: left;
-                background-color: aqua;
+                text-align: center;
+                background-color: rgb(64, 98, 210);
+                color: white;
 
                 &:first-child {
-                    border-left: 0.5px solid #000;
-                    border-radius: 1rem 0 0 0;
+                    border-left: 0.5px solid #ddd;
+                    border-radius: 0.5rem 0 0 0;
 
                 }
 
                 &:last-child {
-                    border-right: 0.5px solid #000;
-                    border-radius: 0 1rem 0 0;
+                    border-right: 0.5px solid #ddd;
+                    border-radius: 0 0.5rem 0 0;
                 }
 
             }
@@ -110,14 +111,14 @@
             & td {
 
                 text-align: left;
-                background-color: aqua;
+                /* background-color: aqua; */
 
                 &:first-child {
-                    border-radius: 0 0 0 1rem;
+                    border-radius: 0 0 0 0.5rem;
                 }
 
                 &:last-child {
-                    border-radius: 0 0 1rem 0;
+                    border-radius: 0 0 0.5rem 0;
                 }
 
             }
@@ -128,4 +129,69 @@
 
 
 
+
+
+}
+
+/* give table all cell border */
+
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: none;
+    border-radius: 0.9rem;
+    overflow: hidden;
+
+    & td {
+        border: 0.5px solid #ddd;
+        padding: 0.5rem;
+    }
+
+    & tr:first-child {
+        overflow: hidden;
+
+        & th {
+            border: 0.5px solid #ddd;
+            border-left: 0.5px solid #ddd;
+            border-right: 0.5px solid #ddd;
+            padding: 0.5rem;
+            text-align: center;
+            background-color: rgb(64, 98, 210);
+            color: white;
+
+            &:first-child {
+                border-left: 0.5px solid #ddd;
+                border-radius: 0.5rem 0 0 0;
+
+            }
+
+            &:last-child {
+                border-right: 0.5px solid #ddd;
+                border-radius: 0 0.5rem 0 0;
+            }
+
+        }
+
+    }
+
+    & tr:last-child {
+        overflow: hidden;
+
+        & td {
+
+            text-align: left;
+            /* background-color: aqua; */
+
+            &:first-child {
+                border-radius: 0 0 0 0.5rem;
+            }
+
+            &:last-child {
+                border-radius: 0 0 0.5rem 0;
+            }
+
+        }
+    }
 }
