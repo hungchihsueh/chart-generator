@@ -14,7 +14,7 @@ function App() {
 	async function doMermaid() {
 		mermaid.initialize();
 		const mermaids = document.querySelectorAll(".mermaid");
-		console.log("mermaids", mermaids);
+		// console.log("mermaids", mermaids);
 		mermaids.forEach((m) => {
 			let graphDefinition = m.innerText;
 			mermaid.render("graphDiv", graphDefinition).then((svgObj) => {
@@ -22,124 +22,175 @@ function App() {
 			});
 		});
 	}
-	async function doD3() {
+	async function doD3BarChart() {
 		const margin = { top: 20, right: 20, bottom: 30, left: 40 };
 		const width = 600 - margin.left - margin.right;
 		const height = 400 - margin.top - margin.bottom;
+		const d3BarCharts = document.querySelectorAll(".d3barchart");
+		// loop through all the d3barchart divs
+		d3BarCharts.forEach((d, i) => {
+			d.setAttribute("id", `d3barchart${i}`);
+			const dataString = d.innerText.replaceAll(" ", "\n");
+			d.innerText = "";
+			const svg = d3
+				.select(`#d3barchart${i}`)
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", `translate(${margin.left},${margin.top})`);
 
-		// Append an SVG element to the chart div
-		document
-			.getElementById("output")
-			.appendChild(document.createElement("div"))
-			.setAttribute("id", "chart");
-		const svg = d3
-			.select(".d3barchart")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom)
-			.append("g")
-			.attr("transform", `translate(${margin.left}, ${margin.top})`);
+			const data = d3.csvParse(dataString, d3.autoType);
 
-		// Load the CSV data
-		// console.log("d3chart parse",d3.csvParse(code))
-		d3.csv("#").then((x) => {
-			console.log(document.querySelector(".d3barchart").innerText);
-			const dataString = document
-				.querySelector(".d3barchart")
-				.innerText.replaceAll(" ", "\n");
-			const data = d3.csvParse(dataString);
-			document.querySelector(".d3barchart").innerText = "";
-			// Convert data values to numbers
-			console.log("csv data", data);
-			data.forEach((d) => {
-				d["2020年"] = +d["2020年"];
-				d["2021年"] = +d["2021年"];
-				d["2022年"] = +d["2022年"];
-			});
+			// List of subgroups = header of the csv files = soil condition here
+			const subgroups = data.columns.slice(1);
 
-			// Get the column names
-			const columns = data.columns.slice(1);
+			// List of groups = species here = value of the first column called group -> I show them on the X axis
+			const groups = data.map((d) => d[data.columns[0]]);
 
-			// Set up the x and y scales
-			const xScale = d3
-				.scaleBand()
-				.domain(data.map((d) => d["組名"]))
-				.range([0, width])
-				.paddingInner(0.1)
-				.paddingOuter(0.1);
-
-			const yScale = d3
-				.scaleLinear()
-				.domain([0, d3.max(data, (d) => d3.max(columns, (col) => d[col]))])
-				.range([height, 0]);
-
-			// Set up the color scale
-			const colorScale = d3
-				.scaleOrdinal()
-				.domain(columns)
-				.range(d3.schemeCategory10);
-
-			// Draw the bars
-			const groups = svg
-				.selectAll(".group")
-				.data(data)
-				.join("g")
-				.attr("class", "group")
-				.attr("transform", (d) => `translate(${xScale(d["組名"])}, 0)`);
-
-			groups
-				.selectAll("rect")
-				.data((d) =>
-					columns.map((col) => ({
-						group: d["組名"],
-						column: col,
-						value: d[col],
-					})),
-				)
-				.join("rect")
-				.attr("class", "bar")
-				.attr(
-					"x",
-					(d) =>
-						(xScale.bandwidth() / columns.length) * columns.indexOf(d.column),
-				)
-				.attr("y", (d) => yScale(d.value))
-				.attr("width", xScale.bandwidth() / columns.length)
-				.attr("height", (d) => height - yScale(d.value))
-				.attr("fill", (d) => colorScale(d.column));
-
-			// Add x-axis
+			// Add X axis
+			const x = d3.scaleBand().domain(groups).range([0, width]).padding([0.2]);
 			svg
 				.append("g")
-				.attr("class", "axis")
 				.attr("transform", `translate(0, ${height})`)
-				.call(d3.axisBottom(xScale));
+				.call(d3.axisBottom(x).tickSize(0));
 
-			// Add y-axis
-			svg.append("g").attr("class", "axis").call(d3.axisLeft(yScale));
+			// Add Y axis
+			const y = d3
+				.scaleLinear()
+				.domain([
+					0,
+					d3.max(
+						data.map((d) => {
+							return d3.max(
+								Object.values(d).filter((v) => typeof v == "number"),
+							);
+						}),
+					),
+				])
+				.range([height, 0]);
+			svg.append("g").call(d3.axisLeft(y));
 
-			// Add legend
-			const legend = svg
+			// Another scale for subgroup position?
+
+			const xSubgroup = d3
+				.scaleBand()
+				.domain(subgroups)
+				.range([0, x.bandwidth()])
+				.padding([0.05]);
+
+			// color palette = one color per subgroup
+			const color = d3
+				.scaleOrdinal()
+				.domain(subgroups)
+				.range(["#e41a1c", "#377eb8", "#4daf4a"]);
+
+			// Show the bars
+			svg
 				.append("g")
-				.attr("class", "legend")
-				.attr("transform", `translate(0, ${height + margin.bottom / 2})`);
-
-			legend
+				.selectAll("g")
+				// Enter in data = loop group per group
+				.data(data)
+				.join("g")
+				.attr("transform", (d) => {
+					// console.log("d", d);
+					// Object.values(d).indexOf(d[data.columns[0]]);
+					return `translate(${x(d[data.columns[0]])}, 0)`;
+				})
 				.selectAll("rect")
-				.data(columns)
+				.data(function (d) {
+					console.log(d);
+					return subgroups.map(function (key) {
+						return { key: key, value: d[key] };
+					});
+				})
 				.join("rect")
-				.attr("x", (_, i) => i * 80)
-				.attr("width", 10)
-				.attr("height", 10)
-				.attr("fill", (d) => colorScale(d));
-
-			legend
-				.selectAll("text")
-				.data(columns)
-				.join("text")
-				.attr("x", (_, i) => i * 80 + 15)
-				.attr("y", 9)
-				.text((d) => d);
+				.attr("x", (d) => {
+					return xSubgroup(d.key);
+				})
+				.attr("y", (d) => y(d.value))
+				.attr("width", xSubgroup.bandwidth())
+				.attr("height", (d) => height - y(d.value))
+				.attr("fill", (d) => color(d.key));
 		});
+		// const dataString = document
+		// 	.querySelector(".d3barchart")
+		// 	.innerText.replaceAll(" ", "\n");
+		// // append the svg object to the body of the page
+		// const svg = d3
+		// 	.select(".d3barchart")
+		// 	.append("svg")
+		// 	.attr("width", width + margin.left + margin.right)
+		// 	.attr("height", height + margin.top + margin.bottom)
+		// 	.append("g")
+		// 	.attr("transform", `translate(${margin.left},${margin.top})`);
+
+		// const data = await d3.csvParse(dataString, d3.autoType);
+
+		// // List of subgroups = header of the csv files = soil condition here
+		// const subgroups = data.columns.slice(1);
+
+		// // List of groups = species here = value of the first column called group -> I show them on the X axis
+		// const groups = data.map((d) => d[data.columns[0]]);
+
+		// // Add X axis
+		// const x = d3.scaleBand().domain(groups).range([0, width]).padding([0.2]);
+		// svg
+		// 	.append("g")
+		// 	.attr("transform", `translate(0, ${height})`)
+		// 	.call(d3.axisBottom(x).tickSize(0));
+
+		// // Add Y axis
+		// const y = d3
+		// 	.scaleLinear()
+		// 	.domain([
+		// 		0,
+		// 		d3.max(
+		// 			data.map((d) =>
+		// 				d3.max(Object.values(d).filter((v) => typeof v == "number")),
+		// 			),
+		// 		),
+		// 	])
+		// 	.range([height, 0]);
+		// svg.append("g").call(d3.axisLeft(y));
+
+		// // Another scale for subgroup position?
+		// const xSubgroup = d3
+		// 	.scaleBand()
+		// 	.domain(subgroups)
+		// 	.range([0, x.bandwidth()])
+		// 	.padding([0.05]);
+
+		// // color palette = one color per subgroup
+		// const color = d3
+		// 	.scaleOrdinal()
+		// 	.domain(subgroups)
+		// 	.range(["#e41a1c", "#377eb8", "#4daf4a"]);
+
+		// // Show the bars
+		// svg
+		// 	.append("g")
+		// 	.selectAll("g")
+		// 	// Enter in data = loop group per group
+		// 	.data(data)
+		// 	.join("g")
+		// 	.attr("transform", (d) => `translate(${x(d.group)}, 0)`)
+		// 	.selectAll("rect")
+		// 	.data(function (d) {
+		// 		// console.log("d", d);
+		// 		return subgroups.map(function (key) {
+		// 			// console.log(key);
+		// 			return { key: key, value: d[key] };
+		// 		});
+		// 	})
+		// 	.join("rect")
+		// 	.attr("x", (d) => {
+		// 		xSubgroup(d.key);
+		// 	})
+		// 	.attr("y", (d) => y(d.value))
+		// 	.attr("width", xSubgroup.bandwidth())
+		// 	.attr("height", (d) => height - y(d.value))
+		// 	.attr("fill", (d) => color(d.key));
 	}
 	function convertToHTML() {
 		var fileInput = document.getElementById("fileInput");
@@ -232,8 +283,12 @@ function App() {
 					x = x.join("");
 					// console.log(x);
 					document.getElementById("output").innerHTML = x;
+				})
+				.then(async () => {
 					doMermaid();
-					doD3();
+					setTimeout(() => {
+						doD3BarChart();
+					}, 1000);
 				})
 				.done();
 		};
