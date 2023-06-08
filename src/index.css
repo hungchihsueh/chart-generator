@@ -2,79 +2,163 @@
 @tailwind components;
 @tailwind utilities;
 
-.talk {
-    border-radius: 1rem;
-    gap: 1rem;
-    overflow: hidden;
-    /* inset box shadow  as border*/
-    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 1);
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    /* width of two a4 paper to px */
-    width: 1190px;
-    /* height of two a4 paper to px */
-    height: 842px;
-    display: flex;
-    background-color: #ffd2d2;
+.lightBlue {
+    >* {
+        margin-bottom: 5rem;
+        width: 1123px;
 
-    & .textPart {
+    }
+
+    & .talk {
+        border-radius: 1rem;
+        gap: 1rem;
+        overflow: hidden;
         padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        /* width of two a4 paper to px */
+        width: 1123px;
+        /* height of two a4 paper to px */
+        height: 794px;
+        display: flex;
+        background-color: white;
+        /*light shadow with blue color  */
+        box-shadow: 0 0 10px 0 rgba(0, 0, 255, 0.2);
+
+        & .textPart {
+            padding: 1rem;
+        }
+
+        & h1 {
+            color: #000080;
+            font-weight: bold;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        & p {
+            font-size: 1rem;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+
+        }
+
+        & img {
+            /* aspect-ratio :2/1 */
+            min-width: 595px;
+            height: calc(794px - 2rem);
+            object-fit: cover;
+            overflow: hidden;
+            border-radius: 1rem;
+
+        }
     }
 
-    & h1 {
-        color: red;
-        font-weight: bold;
-        font-size: 3rem;
-        margin-bottom: 1rem;
-    }
+    & .mermaid {
+        & svg {
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+        }
 
-    & p {
-        font-size: 1rem;
-        white-space: pre-wrap;
-        line-height: 1.5;
-        margin-bottom: 1rem;
-    }
-
-    & img {
-        /* aspect-ratio :2/1 */
-        min-width: 595px;
-        height: 842px;
-        object-fit: cover;
-
-    }
-}
-
-.mermaid {
-    & svg {
-        width: 100% !important;
-        height: 100% !important;
-        max-width: 100% !important;
-    }
-
-    & rect {
-        fill: #ffd2d2 !important;
-        /* round corner */
-        rx: 5;
-        ry: 5;
-        /* width: 50px;
+        & rect {
+            fill: #ffd2d2 !important;
+            /* round corner */
+            rx: 5;
+            ry: 5;
+            /* width: 50px;
         height: 50px; */
+        }
     }
-}
 
-.table {
-    display: block;
+    & .table {
+        display: block;
+
+        & table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: none;
+            overflow: hidden;
+            /* shadow */
+            box-shadow: 0 0 10px 0 rgba(0, 0, 255, 0.2);
+
+            & td,
+            th {
+                border: 1px solid #b5ddf8;
+                padding: 0.5rem;
+            }
+
+            & tr:first-child {
+                overflow: hidden;
+
+                & th {
+                    border: 1px solid #b5ddf8;
+                    border-left: 1px solid #b5ddf8;
+                    border-right: 1px solid #b5ddf8;
+                    padding: 0.5rem;
+                    text-align: center;
+                    background-color: #9eceff;
+                    color: white;
+
+                    &:first-child {
+                        border-left: 2px solid #b5ddf8;
+                        border-radius: 0.5rem 0 0 0;
+
+                    }
+
+                    &:last-child {
+                        border-right: 2px solid #ddd;
+                        border-radius: 0 0.5rem 0 0;
+                    }
+
+                }
+
+            }
+
+            & tr:last-child {
+                overflow: hidden;
+
+                & td {
+                    padding: .5rem;
+                    text-align: left;
+
+
+                    &:first-child {
+                        border-radius: 0 0 0 0.5rem;
+                    }
+
+                    &:last-child {
+                        border-radius: 0 0 0.5rem 0;
+                    }
+
+                }
+            }
+
+
+        }
+
+
+
+
+
+    }
+
+    /* give table all cell border */
+
 
     & table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
         border: none;
-        /* border-radius: 0.9rem; */
+        border-radius: 0.9rem;
         overflow: hidden;
 
         & td {
-            border: 0.5px solid #ddd;
+            border: 1px solid #ddd;
             padding: 0.5rem;
         }
 
@@ -82,22 +166,22 @@
             overflow: hidden;
 
             & th {
-                border: 0.5px solid #ddd;
-                border-left: 0.5px solid #ddd;
-                border-right: 0.5px solid #ddd;
+                border: 1px solid #ddd;
+                border-left: 1px solid #ddd;
+                border-right: 1px solid #ddd;
                 padding: 0.5rem;
                 text-align: center;
                 background-color: rgb(64, 98, 210);
                 color: white;
 
                 &:first-child {
-                    border-left: 0.5px solid #ddd;
+                    border-left: 1px solid #ddd;
                     border-radius: 0.5rem 0 0 0;
 
                 }
 
                 &:last-child {
-                    border-right: 0.5px solid #ddd;
+                    border-right: 1px solid #ddd;
                     border-radius: 0 0.5rem 0 0;
                 }
 
@@ -122,76 +206,6 @@
                 }
 
             }
-        }
-
-
-    }
-
-
-
-
-
-}
-
-/* give table all cell border */
-
-
-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    border: none;
-    border-radius: 0.9rem;
-    overflow: hidden;
-
-    & td {
-        border: 0.5px solid #ddd;
-        padding: 0.5rem;
-    }
-
-    & tr:first-child {
-        overflow: hidden;
-
-        & th {
-            border: 0.5px solid #ddd;
-            border-left: 0.5px solid #ddd;
-            border-right: 0.5px solid #ddd;
-            padding: 0.5rem;
-            text-align: center;
-            background-color: rgb(64, 98, 210);
-            color: white;
-
-            &:first-child {
-                border-left: 0.5px solid #ddd;
-                border-radius: 0.5rem 0 0 0;
-
-            }
-
-            &:last-child {
-                border-right: 0.5px solid #ddd;
-                border-radius: 0 0.5rem 0 0;
-            }
-
-        }
-
-    }
-
-    & tr:last-child {
-        overflow: hidden;
-
-        & td {
-
-            text-align: left;
-            /* background-color: aqua; */
-
-            &:first-child {
-                border-radius: 0 0 0 0.5rem;
-            }
-
-            &:last-child {
-                border-radius: 0 0 0.5rem 0;
-            }
-
         }
     }
 }

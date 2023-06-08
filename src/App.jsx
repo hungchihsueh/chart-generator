@@ -1,16 +1,21 @@
+// libs
 import { useState, useEffect } from "react";
-import GroupedChart from "./chart_functions/GroupedChart";
-
 import * as d3 from "d3";
-const reader = new FileReader();
 import { marked } from "marked";
 import mammoth from "mammoth";
 import mermaid from "mermaid";
+
+// utils
 import renderer from "./renderer/markedRenderer";
+import * as ThemeColor from "./util/chartColors";
 
 marked.use({ renderer });
 
+const A4_WIDTH = 1123;
+const A4_HEIGHT = 794;
+
 function App() {
+	const [theme, setTheme] = useState("lightBlue");
 	async function doMermaid() {
 		mermaid.initialize();
 		const mermaids = document.querySelectorAll(".mermaid");
@@ -24,9 +29,16 @@ function App() {
 	}
 	async function doD3BarChart() {
 		const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-		const width = 600 - margin.left - margin.right;
-		const height = 400 - margin.top - margin.bottom;
+		const width = A4_WIDTH - margin.left - margin.right;
+		const height = A4_HEIGHT - margin.top - margin.bottom;
+
+		// set colors
+		const colors = ThemeColor[theme]
+			? ThemeColor[theme]
+			: ThemeColor["lightBlue"];
+
 		const d3BarCharts = document.querySelectorAll(".d3barchart");
+
 		// loop through all the d3barchart divs
 		d3BarCharts.forEach((d, i) => {
 			d.setAttribute("id", `d3barchart${i}`);
@@ -80,10 +92,8 @@ function App() {
 				.padding([0.05]);
 
 			// color palette = one color per subgroup
-			const color = d3
-				.scaleOrdinal()
-				.domain(subgroups)
-				.range(["#e41a1c", "#377eb8", "#4daf4a"]);
+
+			const color = d3.scaleOrdinal().domain(subgroups).range(colors);
 
 			// Show the bars
 			svg
@@ -111,86 +121,11 @@ function App() {
 				.attr("y", (d) => y(d.value))
 				.attr("width", xSubgroup.bandwidth())
 				.attr("height", (d) => height - y(d.value))
-				.attr("fill", (d) => color(d.key));
+				.attr("fill", (d) => color(d.key))
+				// round the only  corners on the top
+				.attr("rx", 6)
+				.attr("ry", 6);
 		});
-		// const dataString = document
-		// 	.querySelector(".d3barchart")
-		// 	.innerText.replaceAll(" ", "\n");
-		// // append the svg object to the body of the page
-		// const svg = d3
-		// 	.select(".d3barchart")
-		// 	.append("svg")
-		// 	.attr("width", width + margin.left + margin.right)
-		// 	.attr("height", height + margin.top + margin.bottom)
-		// 	.append("g")
-		// 	.attr("transform", `translate(${margin.left},${margin.top})`);
-
-		// const data = await d3.csvParse(dataString, d3.autoType);
-
-		// // List of subgroups = header of the csv files = soil condition here
-		// const subgroups = data.columns.slice(1);
-
-		// // List of groups = species here = value of the first column called group -> I show them on the X axis
-		// const groups = data.map((d) => d[data.columns[0]]);
-
-		// // Add X axis
-		// const x = d3.scaleBand().domain(groups).range([0, width]).padding([0.2]);
-		// svg
-		// 	.append("g")
-		// 	.attr("transform", `translate(0, ${height})`)
-		// 	.call(d3.axisBottom(x).tickSize(0));
-
-		// // Add Y axis
-		// const y = d3
-		// 	.scaleLinear()
-		// 	.domain([
-		// 		0,
-		// 		d3.max(
-		// 			data.map((d) =>
-		// 				d3.max(Object.values(d).filter((v) => typeof v == "number")),
-		// 			),
-		// 		),
-		// 	])
-		// 	.range([height, 0]);
-		// svg.append("g").call(d3.axisLeft(y));
-
-		// // Another scale for subgroup position?
-		// const xSubgroup = d3
-		// 	.scaleBand()
-		// 	.domain(subgroups)
-		// 	.range([0, x.bandwidth()])
-		// 	.padding([0.05]);
-
-		// // color palette = one color per subgroup
-		// const color = d3
-		// 	.scaleOrdinal()
-		// 	.domain(subgroups)
-		// 	.range(["#e41a1c", "#377eb8", "#4daf4a"]);
-
-		// // Show the bars
-		// svg
-		// 	.append("g")
-		// 	.selectAll("g")
-		// 	// Enter in data = loop group per group
-		// 	.data(data)
-		// 	.join("g")
-		// 	.attr("transform", (d) => `translate(${x(d.group)}, 0)`)
-		// 	.selectAll("rect")
-		// 	.data(function (d) {
-		// 		// console.log("d", d);
-		// 		return subgroups.map(function (key) {
-		// 			// console.log(key);
-		// 			return { key: key, value: d[key] };
-		// 		});
-		// 	})
-		// 	.join("rect")
-		// 	.attr("x", (d) => {
-		// 		xSubgroup(d.key);
-		// 	})
-		// 	.attr("y", (d) => y(d.value))
-		// 	.attr("width", xSubgroup.bandwidth())
-		// 	.attr("height", (d) => height - y(d.value))
-		// 	.attr("fill", (d) => color(d.key));
 	}
 	function convertToHTML() {
 		var fileInput = document.getElementById("fileInput");
@@ -286,9 +221,8 @@ function App() {
 				})
 				.then(async () => {
 					doMermaid();
-					setTimeout(() => {
-						doD3BarChart();
-					}, 1000);
+
+					doD3BarChart();
 				})
 				.done();
 		};
@@ -298,72 +232,46 @@ function App() {
 
 	return (
 		<>
-			<div className="flex flex-col items-center justify-center">
-				<input
-					type="file"
-					name=""
-					id="fileInput"
-					className="bg-pink-500"
-					onChange={(e) => {}}
-				/>
-				<button
-					className="px-2 py-1 m-5 transition-all duration-150 ease-in-out bg-white border rounded shadow hover:bg-blue-500 hover:text-white"
-					id="convert-button"
-					onClick={() => convertToHTML()}>
-					Convert to HTML
-				</button>
+			<div className="flex flex-col items-center justify-center py-5">
+				<div className="flex items-center justify-center gap-3 mb-10">
+					<input
+						type="file"
+						name=""
+						id="fileInput"
+						className="bg-gray-100 border rounded"
+						onChange={(e) => {}}
+					/>
+					<select
+						className="rounded shadow-inner"
+						onChange={(e) => {
+							setTheme(e.target.value);
+						}}
+						name="theme"
+						id="theme">
+						<option value="lightBlue">lightBlue</option>
+						<option value="forest">forest</option>
+					</select>
+					<button
+						className="px-2 py-1 m-5 transition-all duration-150 ease-in-out bg-white border rounded shadow hover:bg-blue-500 hover:text-white"
+						id="convert-button"
+						onClick={() => convertToHTML()}>
+						Convert to HTML
+					</button>
+				</div>
 
 				<div
 					id="output"
-					className="mx-auto w-[1190px]"></div>
-
-				{/* <table>
-					<thead>
-						<tr>
-							<th rowSpan={2}>Year</th>
-							<th colSpan={3}>2022</th>
-							<th colSpan={3}>2023</th>
-						</tr>
-						<tr>
-							<th>ha</th>
-							<th>hb</th>
-							<th>hc</th>
-							<th>ha</th>
-							<th>hb</th>
-							<th>hc</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>head1</td>
-							<td>1</td>
-							<td>2</td>
-							<td>3</td>
-							<td>1</td>
-							<td>2</td>
-							<td>3</td>
-						</tr>
-						<tr>
-							<td>head2</td>
-							<td>1</td>
-							<td>2</td>
-							<td>3</td>
-							<td>1</td>
-							<td>2</td>
-							<td>3</td>
-						</tr>
-						<tr>
-							<td>head3</td>
-							<td>1</td>
-							<td>2</td>
-							<td>3</td>
-							<td>1</td>
-							<td>2</td>
-							<td>3</td>
-						</tr>
-					</tbody>
-				</table> */}
+					className={`${theme} mx-auto w-[${A4_WIDTH}]  flex flex-col justify-start items-center`}></div>
 			</div>
+			{/* {blueTheme.map((color) => (
+				<>
+					<div
+						className={` p-10`}
+						style={{ backgroundColor: color }}>
+						1
+					</div>
+				</>
+			))} */}
 		</>
 	);
 }
