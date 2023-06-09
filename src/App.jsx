@@ -20,9 +20,9 @@ function App() {
 		mermaid.initialize();
 		const mermaids = document.querySelectorAll(".mermaid");
 		// console.log("mermaids", mermaids);
-		mermaids.forEach((m) => {
+		mermaids.forEach((m, i) => {
 			let graphDefinition = m.innerText;
-			mermaid.render("graphDiv", graphDefinition).then((svgObj) => {
+			mermaid.render(`graphDiv-${i}`, graphDefinition).then((svgObj) => {
 				m.innerHTML = svgObj.svg;
 			});
 		});
@@ -64,8 +64,10 @@ function App() {
 			const x = d3.scaleBand().domain(groups).range([0, width]).padding([0.2]);
 			svg
 				.append("g")
-				.attr("transform", `translate(0, ${height})`)
-				.call(d3.axisBottom(x).tickSize(0));
+				.attr("transform", `translate(0, ${height + 3})`)
+				.call(d3.axisBottom(x).tickSize(0))
+				.selectAll("text")
+				.style("transform", "translate(0, 10px)");
 
 			// Add Y axis
 			const y = d3
@@ -82,6 +84,13 @@ function App() {
 				])
 				.range([height, 0]);
 			svg.append("g").call(d3.axisLeft(y));
+
+			// make axis blue and thicker
+			svg.selectAll("path").style("stroke", colors[0]).style("stroke-width", 5);
+
+			svg.selectAll("line").style("stroke", colors[0]).style("stroke-width", 5);
+
+			svg.selectAll("text").style("fill", colors[0]).style("font-size", 12);
 
 			// Another scale for subgroup position?
 
@@ -244,6 +253,7 @@ function App() {
 					<select
 						className="rounded shadow-inner"
 						onChange={(e) => {
+							document.getElementById("output").innerHTML = "";
 							setTheme(e.target.value);
 						}}
 						name="theme"
