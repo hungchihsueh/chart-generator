@@ -12,7 +12,7 @@
   "dependencies": {
     "d3": "^7.8.5",
     "mammoth": "^1.6.0",
-    "marked": "^5.0.5",
+    "marked": "^5.1.0",
     "marked-custom-heading-id": "^2.0.1",
     "marked-extended-tables": "^1.0.6",
     "marked-gfm-heading-id": "^3.0.4",
@@ -23,8 +23,8 @@
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
-    "@types/react": "^18.2.9",
-    "@types/react-dom": "^18.2.4",
+    "@types/react": "^18.2.12",
+    "@types/react-dom": "^18.2.5",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.42.0",
