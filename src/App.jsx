@@ -22,7 +22,9 @@ function App() {
 		// console.log("mermaids", mermaids);
 		mermaids.forEach((m, i) => {
 			let graphDefinition = m.innerText;
+			console.log("graphDefinition", graphDefinition);
 			mermaid.render(`graphDiv-${i}`, graphDefinition).then((svgObj) => {
+				console.log("svgObj", svgObj);
 				m.innerHTML = svgObj.svg;
 			});
 		});
@@ -154,6 +156,7 @@ function App() {
 					"p[style-name='Title'] => h1.hello:fresh",
 					"p[style-name='sexy'] => p.sexy:fresh",
 					"p[style-name='d3barchart'] => div.d3barchart",
+					"p[style-name='mermaid'] => div.mermaid",
 				],
 			};
 			const testResult = mammoth
@@ -243,8 +246,8 @@ function App() {
 					document.getElementById("output").innerHTML = x;
 				})
 				.then(async () => {
-					// doMermaid();
-					// doD3BarChart();
+					doMermaid();
+					doD3BarChart();
 				})
 				.done();
 		};
