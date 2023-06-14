@@ -145,15 +145,29 @@ function App() {
 		reader.onload = function (event) {
 			var arrayBuffer = event.target.result;
 
-			var options = {
+			var arrayBufferOption = {
 				arrayBuffer: arrayBuffer,
 			};
+			const testOptions = {
+				styleMap: [
+					"table => table.table:fresh",
+					"p[style-name='Title'] => h1.hello:fresh",
+					"p[style-name='sexy'] => p.sexy:fresh",
+					"p[style-name='d3barchart'] => div.d3barchart",
+				],
+			};
+			const testResult = mammoth
+				.convertToHtml(arrayBufferOption, testOptions)
+				.then(function (result) {
+					console.log("testResult", result);
+					document.getElementById("test").innerHTML = result.value;
+				});
 
 			var result = mammoth
-				.extractRawText(options)
+				.extractRawText(arrayBufferOption)
 				.then(function (result) {
 					var html = result.value;
-					console.log("html", html);
+					// console.log("html", html);
 					function separateMarkdownSections(markdownString) {
 						// Define the regular expression pattern to split the Markdown string
 						const pattern = /\n{2,}/;
@@ -167,7 +181,7 @@ function App() {
 						return trimmedSections;
 					}
 					const sections = separateMarkdownSections(html);
-					console.log("sections", sections);
+					// console.log("sections", sections);
 					document.getElementById("output").innerText = html;
 
 					let newArr = [...sections];
@@ -229,9 +243,8 @@ function App() {
 					document.getElementById("output").innerHTML = x;
 				})
 				.then(async () => {
-					doMermaid();
-
-					doD3BarChart();
+					// doMermaid();
+					// doD3BarChart();
 				})
 				.done();
 		};
@@ -273,15 +286,8 @@ function App() {
 					id="output"
 					className={`${theme} mx-auto w-[${A4_WIDTH}]  flex flex-col justify-start items-center`}></div>
 			</div>
-			{/* {blueTheme.map((color) => (
-				<>
-					<div
-						className={` p-10`}
-						style={{ backgroundColor: color }}>
-						1
-					</div>
-				</>
-			))} */}
+
+			<div id="test"></div>
 		</>
 	);
 }
