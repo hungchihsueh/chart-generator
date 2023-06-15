@@ -21,8 +21,9 @@ function App() {
 		const mermaids = document.querySelectorAll(".mermaid");
 		// console.log("mermaids", mermaids);
 		mermaids.forEach((m, i) => {
-			let graphDefinition = m.innerText;
+			let graphDefinition = m.innerText.split(";").join(";\n");
 			console.log("graphDefinition", graphDefinition);
+
 			mermaid.render(`graphDiv-${i}`, graphDefinition).then((svgObj) => {
 				console.log("svgObj", svgObj);
 				m.innerHTML = svgObj.svg;
@@ -153,10 +154,12 @@ function App() {
 			const testOptions = {
 				styleMap: [
 					"table => table.table:fresh",
+					"p[style-name='Table Heading'] => p.table-heading:fresh",
 					"p[style-name='Title'] => h1.hello:fresh",
 					"p[style-name='sexy'] => p.sexy:fresh",
 					"p[style-name='d3barchart'] => div.d3barchart",
 					"p[style-name='mermaid'] => div.mermaid",
+					"p[style-name='talk'] => div.talk",
 				],
 			};
 			const testResult = mammoth
@@ -164,92 +167,116 @@ function App() {
 				.then(function (result) {
 					console.log("testResult", result);
 					document.getElementById("test").innerHTML = result.value;
-				});
-
-			var result = mammoth
-				.extractRawText(arrayBufferOption)
-				.then(function (result) {
-					var html = result.value;
-					// console.log("html", html);
-					function separateMarkdownSections(markdownString) {
-						// Define the regular expression pattern to split the Markdown string
-						const pattern = /\n{2,}/;
-
-						// Split the Markdown string using the regular expression pattern
-						const sections = markdownString.split(pattern);
-
-						// Trim leading and trailing whitespace from each section
-						const trimmedSections = sections.map((section) => section.trim());
-
-						return trimmedSections;
-					}
-					const sections = separateMarkdownSections(html);
-					// console.log("sections", sections);
-					document.getElementById("output").innerText = html;
-
-					let newArr = [...sections];
-					// console.log(newArr);
-					let codeBlockStartIndex = 0;
-					let codeBlock = [];
-					// know the code block start with "```SOMETHONG" and end with "```"
-					// try identify where "```SOMETHING" at and where "```" at
-					// then try totake the item between index and put it into a new array
-					//and put it back to the original array at the same index
-
-					for (let i = 0; i < newArr.length; i++) {
-						// console.log(codeBlockStartIndex);
-						// console.log("newArr[i]", newArr[i]);
-
-						if (
-							typeof newArr[i] != "object" &&
-							codeBlockStartIndex == 0 &&
-							newArr[i].startsWith("```")
-						) {
-							codeBlockStartIndex = i;
-							codeBlock.push(newArr[i]);
-							// console.log("codeBlock=0", codeBlock);
-						} else {
-							if (
-								typeof newArr[i] != "object" &&
-								codeBlockStartIndex !== 0 &&
-								newArr[i].endsWith("```")
-							) {
-								codeBlock.push(newArr[i]);
-								// console.log("codeBlock!!!", codeBlock);
-								newArr.splice(codeBlockStartIndex, codeBlock.length, codeBlock);
-								// console.log("newArr", newArr);
-								i = 0;
-								codeBlockStartIndex = 0;
-								codeBlock = [];
-							} else if (
-								typeof newArr[i] != "object" &&
-								codeBlockStartIndex !== 0 &&
-								!newArr[i].endsWith("```")
-							) {
-								codeBlock.push(newArr[i]);
-								// console.log("codeBlock!=0", codeBlock);
-							}
-						}
-					}
-					console.log("the end", newArr);
-
-					let x = newArr.flatMap((item) => {
-						if (typeof item == "object") {
-							// console.log("item", marked(item.join("\n")));
-							return marked(`${item.join("\n")}`);
-						}
-						return marked(item);
-					});
-					// console.log("before join", x);
-					x = x.join("");
-					// console.log(x);
-					document.getElementById("output").innerHTML = x;
 				})
-				.then(async () => {
+				.then(() => {
+					document.querySelectorAll(".talk").forEach((el) => {
+						console.log("html", el.childNodes);
+						let textArr = []
+						let imgArr = [];
+						el.childNodes.forEach((node) => { 
+							console.log("node", node.nodeName);
+							if (node.nodeName == "IMG") { 
+								imgArr.push(node);
+							} else {
+								textArr.push(node);
+							}
+						})
+						textArr = textArr.map((t) => marked(t.textContent));
+						const text = `<div>${textArr.join("")}</div>`;
+						const img = imgArr.map((i) => i.outerHTML).join("");
+						el.innerHTML = `${text}${img}`;
+
+					});
+				})
+				.then(() => {
 					doMermaid();
 					doD3BarChart();
-				})
-				.done();
+				});
+
+			// var result = mammoth
+			// 	.extractRawText(arrayBufferOption)
+			// 	.then(function (result) {
+			// 		var html = result.value;
+			// 		// console.log("html", html);
+			// 		function separateMarkdownSections(markdownString) {
+			// 			// Define the regular expression pattern to split the Markdown string
+			// 			const pattern = /\n{2,}/;
+
+			// 			// Split the Markdown string using the regular expression pattern
+			// 			const sections = markdownString.split(pattern);
+
+			// 			// Trim leading and trailing whitespace from each section
+			// 			const trimmedSections = sections.map((section) => section.trim());
+
+			// 			return trimmedSections;
+			// 		}
+			// 		const sections = separateMarkdownSections(html);
+			// 		// console.log("sections", sections);
+			// 		document.getElementById("output").innerText = html;
+
+			// 		let newArr = [...sections];
+			// 		// console.log(newArr);
+			// 		let codeBlockStartIndex = 0;
+			// 		let codeBlock = [];
+			// 		// know the code block start with "```SOMETHONG" and end with "```"
+			// 		// try identify where "```SOMETHING" at and where "```" at
+			// 		// then try totake the item between index and put it into a new array
+			// 		//and put it back to the original array at the same index
+
+			// 		for (let i = 0; i < newArr.length; i++) {
+			// 			// console.log(codeBlockStartIndex);
+			// 			// console.log("newArr[i]", newArr[i]);
+
+			// 			if (
+			// 				typeof newArr[i] != "object" &&
+			// 				codeBlockStartIndex == 0 &&
+			// 				newArr[i].startsWith("```")
+			// 			) {
+			// 				codeBlockStartIndex = i;
+			// 				codeBlock.push(newArr[i]);
+			// 				// console.log("codeBlock=0", codeBlock);
+			// 			} else {
+			// 				if (
+			// 					typeof newArr[i] != "object" &&
+			// 					codeBlockStartIndex !== 0 &&
+			// 					newArr[i].endsWith("```")
+			// 				) {
+			// 					codeBlock.push(newArr[i]);
+			// 					// console.log("codeBlock!!!", codeBlock);
+			// 					newArr.splice(codeBlockStartIndex, codeBlock.length, codeBlock);
+			// 					// console.log("newArr", newArr);
+			// 					i = 0;
+			// 					codeBlockStartIndex = 0;
+			// 					codeBlock = [];
+			// 				} else if (
+			// 					typeof newArr[i] != "object" &&
+			// 					codeBlockStartIndex !== 0 &&
+			// 					!newArr[i].endsWith("```")
+			// 				) {
+			// 					codeBlock.push(newArr[i]);
+			// 					// console.log("codeBlock!=0", codeBlock);
+			// 				}
+			// 			}
+			// 		}
+			// 		console.log("the end", newArr);
+
+			// 		let x = newArr.flatMap((item) => {
+			// 			if (typeof item == "object") {
+			// 				// console.log("item", marked(item.join("\n")));
+			// 				return marked(`${item.join("\n")}`);
+			// 			}
+			// 			return marked(item);
+			// 		});
+			// 		// console.log("before join", x);
+			// 		x = x.join("");
+			// 		// console.log(x);
+			// 		document.getElementById("output").innerHTML = x;
+			// 	})
+			// 	.then(async () => {
+
+			// 		// doD3BarChart();
+			// 	})
+			// 	.done();
 		};
 
 		reader.readAsArrayBuffer(file);
@@ -290,7 +317,9 @@ function App() {
 					className={`${theme} mx-auto w-[${A4_WIDTH}]  flex flex-col justify-start items-center`}></div>
 			</div>
 
-			<div id="test"></div>
+			<div
+				id="test"
+				className="lightBlue"></div>
 		</>
 	);
 }
