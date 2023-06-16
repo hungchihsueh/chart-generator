@@ -22,7 +22,7 @@ function App() {
 		// console.log("mermaids", mermaids);
 		mermaids.forEach((m, i) => {
 			let graphDefinition = m.innerText.split(";").join(";\n");
-			console.log("graphDefinition", graphDefinition);
+			console.log(`graphDefinition${i}`, graphDefinition);
 
 			mermaid.render(`graphDiv-${i}`, graphDefinition).then((svgObj) => {
 				console.log("svgObj", svgObj);
@@ -160,6 +160,7 @@ function App() {
 					"p[style-name='d3barchart'] => div.d3barchart",
 					"p[style-name='mermaid'] => div.mermaid",
 					"p[style-name='talk'] => div.talk",
+					// "p[style-name='orgnization chart'] => div.orgChart",
 				],
 			};
 			const testResult = mammoth
@@ -171,21 +172,20 @@ function App() {
 				.then(() => {
 					document.querySelectorAll(".talk").forEach((el) => {
 						console.log("html", el.childNodes);
-						let textArr = []
+						let textArr = [];
 						let imgArr = [];
-						el.childNodes.forEach((node) => { 
+						el.childNodes.forEach((node) => {
 							console.log("node", node.nodeName);
-							if (node.nodeName == "IMG") { 
+							if (node.nodeName == "IMG") {
 								imgArr.push(node);
 							} else {
 								textArr.push(node);
 							}
-						})
+						});
 						textArr = textArr.map((t) => marked(t.textContent));
 						const text = `<div>${textArr.join("")}</div>`;
 						const img = imgArr.map((i) => i.outerHTML).join("");
 						el.innerHTML = `${text}${img}`;
-
 					});
 				})
 				.then(() => {
