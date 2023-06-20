@@ -4,7 +4,7 @@ import * as d3 from "d3";
 import { marked } from "marked";
 import mammoth from "mammoth";
 import mermaid from "mermaid";
-
+import css from "/preset/output.css";
 // utils
 import renderer from "./renderer/markedRenderer";
 import * as ThemeColor from "./util/chartColors";
@@ -281,7 +281,35 @@ function App() {
 
 		reader.readAsArrayBuffer(file);
 	}
+	function exportHtml() {
+		const section = document.getElementById("test");
+		const sectionHTML = section.outerHTML;
 
+		import("/preset/output.css")
+			.then((response) => {
+				const cssStr = response.default;
+		
+				return String(cssStr);
+			})
+			.then((css) => {
+				console.log("css", css);
+				const finalHTML = `
+				<head>
+				<style>
+				  ${css}
+				</style>
+				</head>
+				<body>
+				${sectionHTML}
+				</body>
+`;
+				const blob = new Blob([finalHTML], { type: "text/html" });
+				const downloadLink = document.createElement("a");
+				downloadLink.href = URL.createObjectURL(blob);
+				downloadLink.download = "exportedSection.html";
+				downloadLink.click();
+			});
+	}
 	return (
 		<>
 			<div className="flex flex-col items-center justify-center py-5">
@@ -309,6 +337,12 @@ function App() {
 						id="convert-button"
 						onClick={() => convertToHTML()}>
 						Convert to HTML
+					</button>
+					<button
+						className="px-2 py-1 m-5 transition-all duration-150 ease-in-out bg-white border rounded shadow hover:bg-blue-500 hover:text-white"
+						id="convert-button"
+						onClick={() => exportHtml()}>
+						export html
 					</button>
 				</div>
 
