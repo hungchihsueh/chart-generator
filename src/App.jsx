@@ -4,7 +4,6 @@ import * as d3 from "d3";
 import { marked } from "marked";
 import mammoth from "mammoth";
 import mermaid from "mermaid";
-import css from "/preset/output.css";
 // utils
 import renderer from "./renderer/markedRenderer";
 import * as ThemeColor from "./util/chartColors";
@@ -288,7 +287,7 @@ function App() {
 		import("/preset/output.css")
 			.then((response) => {
 				const cssStr = response.default;
-		
+
 				return String(cssStr);
 			})
 			.then((css) => {
@@ -324,7 +323,7 @@ function App() {
 					<select
 						className="rounded shadow-inner"
 						onChange={(e) => {
-							document.getElementById("output").innerHTML = "";
+							document.getElementById("test").innerHTML = "";
 							setTheme(e.target.value);
 						}}
 						name="theme"
@@ -338,22 +337,22 @@ function App() {
 						onClick={() => convertToHTML()}>
 						Convert to HTML
 					</button>
-					<button
+					{/* <button
 						className="px-2 py-1 m-5 transition-all duration-150 ease-in-out bg-white border rounded shadow hover:bg-blue-500 hover:text-white"
 						id="convert-button"
 						onClick={() => exportHtml()}>
 						export html
-					</button>
+					</button> */}
 				</div>
 
-				<div
+				{/* <div
 					id="output"
-					className={`${theme} mx-auto w-[${A4_WIDTH}]  flex flex-col justify-start items-center`}></div>
+					className={`${theme} mx-auto w-[${A4_WIDTH}]  flex flex-col justify-start items-center`}></div> */}
 			</div>
 
 			<div
 				id="test"
-				className="lightBlue"></div>
+				className={`${theme} mx-auto w-[${A4_WIDTH}]  flex flex-col justify-start items-center`}></div>
 		</>
 	);
 }
